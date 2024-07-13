@@ -12,6 +12,8 @@ public interface UserService {
 
     UserResponse getLoggedInUserProfile();
 
+    UserResponse getUserById(Long id);
+
     List<UserResponse> getAllUser();
 
 

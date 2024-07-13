@@ -74,6 +74,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse getUserById(Long id) {
+        UserResponse userResponse = null;
+        if(id != null){
+            UserInfo user = userRepository.findFirstById(id);
+            userResponse = modelMapper.map(user, UserResponse.class);
+        }
+        return userResponse;
+    }
+
+    @Override
     public List<UserResponse> getAllUser() {
         List<UserInfo> users = (List<UserInfo>) userRepository.findAll();
         Type setOfDTOsType = new TypeToken<List<UserResponse>>(){}.getType();

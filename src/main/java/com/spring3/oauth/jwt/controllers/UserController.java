@@ -5,6 +5,7 @@ import com.spring3.oauth.jwt.models.RefreshToken;
 import com.spring3.oauth.jwt.services.JwtService;
 import com.spring3.oauth.jwt.services.RefreshTokenService;
 import com.spring3.oauth.jwt.services.UserService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,6 +61,16 @@ public class UserController {
         try {
         UserResponse userResponse = userService.getLoggedInUserProfile();
         return ResponseEntity.ok().body(userResponse);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        try {
+            UserResponse userResponse = userService.getUserById(id);
+            return ResponseEntity.ok().body(userResponse);
         } catch (Exception e){
             throw new RuntimeException(e);
         }

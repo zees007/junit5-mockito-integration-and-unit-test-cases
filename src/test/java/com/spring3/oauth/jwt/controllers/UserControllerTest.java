@@ -170,5 +170,32 @@ class UserControllerTest {
 
     }
 
+    @Test
+    void getLoggedInUserProfile_Success_Test() throws Exception {
+
+        // given
+        UserRole role1 = new UserRole(1L, "ROLE_USER");
+        UserRole role2 = new UserRole(2L, "ROLE_ADMIN");
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        UserResponse userResponse = new UserResponse(1L, "user1", roles);
+
+        // mocking userService behavior
+        Mockito.when(userService.getLoggedInUserProfile()).thenReturn(userResponse);
+
+        // when and then
+        mockMvc.perform(post("/api/v1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.username").value("user1"))
+                .andExpect(jsonPath("$.roles[0].name").value("ROLE_ADMIN"))
+                .andExpect(jsonPath("$.roles[1].name").value("ROLE_USER"));
+
+    }
+
 
 }
