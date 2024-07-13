@@ -172,4 +172,31 @@ class UserServiceImplTest {
                 assertEquals(roles.size(), userResponses.get(2).getRoles().size());
         }
 
+        @Test
+        void testGetUserById_TestCase() {
+                // Given
+                UserRole role1 = new UserRole(1L, "ROLE_USER");
+                Set<UserRole> roles = new HashSet<>();
+                roles.add(role1);
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(1L);
+                userInfo.setUsername("testUser");
+                userInfo.setPassword("password");
+                userInfo.setRoles(roles);
+
+                when(userRepository.findFirstById(1L)).thenReturn(userInfo);
+
+                // When
+                UserResponse userResponse = userService.getUserById(1L);
+
+                // Then
+                assertNotNull(userResponse);
+                assertEquals(1L, userResponse.getId());
+                assertEquals("testUser", userResponse.getUsername());
+                assertEquals(roles, userResponse.getRoles());
+
+                verify(userRepository, times(1)).findFirstById(1L);
+        }
+
 }
