@@ -223,7 +223,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testDeleteUserById_Success_Test() throws Exception {
+    void deleteUserById_Success_Test() throws Exception {
         // Given
         Long userId = 1L;
 
@@ -236,6 +236,43 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+//    @Test
+//    void getUserById_UserNotFound_Test() throws Exception {
+//        // given
+//        Long userId = 1L;
+//
+//        // mocking userService behavior to throw RuntimeException when user not found
+//        when(userService.getUserById(userId)).thenThrow(new RuntimeException("User not found with id: " + userId));
+//
+//        // when and then
+//        mockMvc.perform(get("/api/v1/user/1", userId)
+//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isInternalServerError())
+//                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+//                .andExpect(jsonPath("$.message").value("User not found with id: " + userId));
+//    }
+
+//    @Test
+//    void getUserById_NullId_Test() throws Exception {
+//        // given
+//        Long userId = null;
+//
+//        // mocking userService behavior to throw IllegalArgumentException when id is null
+//        when(userService.getUserById(userId)).thenThrow(new IllegalArgumentException("Id cannot be null"));
+//
+//        // when and then
+//        mockMvc.perform(get("/api/v1/user/{id}", userId)
+//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isInternalServerError())
+//                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+//                .andExpect(jsonPath("$.message").value("Id cannot be null"));
+//    }
+
+
+
 
 
 
