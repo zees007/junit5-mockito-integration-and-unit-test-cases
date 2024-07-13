@@ -8,7 +8,6 @@ import com.spring3.oauth.jwt.services.JwtService;
 import com.spring3.oauth.jwt.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,7 +83,7 @@ class UserControllerTest {
         userResponse.setRoles(roles);
 
         // mocking userService behavior
-        Mockito.when(userService.saveUser(any(UserRequest.class))).thenReturn(userResponse);
+        when(userService.saveUser(any(UserRequest.class))).thenReturn(userResponse);
 
         // when and then
         mockMvc.perform(post("/api/v1/save")
@@ -118,7 +118,7 @@ class UserControllerTest {
         userResponse.setRoles(roles);
 
         // mocking userService behavior
-        Mockito.when(userService.saveUser(any(UserRequest.class))).thenReturn(userResponse);
+        when(userService.saveUser(any(UserRequest.class))).thenReturn(userResponse);
 
         // when and then
         mockMvc.perform(post("/api/v1/save")
@@ -148,7 +148,7 @@ class UserControllerTest {
         List<UserResponse> userResponses = Arrays.asList(userResponse1, userResponse2, userResponse3);
 
         // mocking userService behavior
-        Mockito.when(userService.getAllUser()).thenReturn(userResponses);
+        when(userService.getAllUser()).thenReturn(userResponses);
 
         // when and then
         mockMvc.perform(get("/api/v1/users")
@@ -183,7 +183,7 @@ class UserControllerTest {
         UserResponse userResponse = new UserResponse(1L, "user1", roles);
 
         // mocking userService behavior
-        Mockito.when(userService.getLoggedInUserProfile()).thenReturn(userResponse);
+        when(userService.getLoggedInUserProfile()).thenReturn(userResponse);
 
         // when and then
         mockMvc.perform(post("/api/v1/profile")
@@ -209,7 +209,7 @@ class UserControllerTest {
         UserResponse userResponse = new UserResponse(1L, "user1", roles);
 
         // mocking userService behavior
-        Mockito.when(userService.getUserById(1L)).thenReturn(userResponse);
+        when(userService.getUserById(1L)).thenReturn(userResponse);
 
         // when and then
         mockMvc.perform(get("/api/v1/user/1")
@@ -222,7 +222,20 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.roles[1].name").value("ROLE_USER"));
     }
 
+    @Test
+    void testDeleteUserById_Success_Test() throws Exception {
+        // Given
+        Long userId = 1L;
 
+        // Mocking userService to return userId when deleteUserById is called
+        when(userService.deleteUserById(userId)).thenReturn(userId);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/delete/{id}", userId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
 
 

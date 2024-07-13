@@ -76,6 +76,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<Long> deleteUserById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(userService.deleteUserById(id));
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/test")
     public String test() {

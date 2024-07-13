@@ -247,4 +247,55 @@ class UserServiceImplTest {
                 verify(userRepository, times(1)).findFirstById(1L);
         }
 
+        @Test
+        void testDeleteUserById_WhenUserExists_TestCase() {
+                // Given
+                Long userId = 1L;
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(userId);
+                userInfo.setUsername("testUser");
+
+                when(userRepository.findFirstById(userId)).thenReturn(userInfo);
+
+                // When
+                Long deletedUserId = userService.deleteUserById(userId);
+
+                // Then
+                assertNotNull(deletedUserId);
+                assertEquals(userId, deletedUserId);
+
+                verify(userRepository, times(1)).findFirstById(userId);
+                verify(userRepository, times(1)).delete(userInfo);
+        }
+
+        @Test
+        void testDeleteUserById_WhenUserDoesNotExist() {
+                // Given
+                Long userId = 1L;
+
+                when(userRepository.findFirstById(userId)).thenReturn(null);
+
+                // When & Then
+                RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+                        userService.deleteUserById(userId);
+                });
+                assertEquals("User not found with id: " + userId, exception.getMessage());
+
+                verify(userRepository, times(1)).findFirstById(userId);
+                verify(userRepository, times(0)).delete(any(UserInfo.class));
+        }
+
+        @Test
+        void testDeleteUserById_WhenIdIsNull() {
+                // When & Then
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        userService.deleteUserById(null);
+                });
+
+                assertEquals("Id cannot be null", exception.getMessage());
+
+                verify(userRepository, times(0)).findFirstById(anyLong());
+                verify(userRepository, times(0)).delete(any(UserInfo.class));
+        }
+
 }
