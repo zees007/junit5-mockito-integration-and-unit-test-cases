@@ -10,7 +10,7 @@ public interface UserService {
 
     UserResponse saveUser(UserRequest userRequest);
 
-    UserResponse getUser();
+    UserResponse getLoggedInUserProfile();
 
     List<UserResponse> getAllUser();
 

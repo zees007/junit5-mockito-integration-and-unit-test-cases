@@ -58,7 +58,7 @@ public class UserController {
     @PostMapping("/profile")
     public ResponseEntity<UserResponse> getUserProfile() {
         try {
-        UserResponse userResponse = userService.getUser();
+        UserResponse userResponse = userService.getLoggedInUserProfile();
         return ResponseEntity.ok().body(userResponse);
         } catch (Exception e){
             throw new RuntimeException(e);
