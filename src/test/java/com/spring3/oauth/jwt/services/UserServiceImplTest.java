@@ -13,8 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,8 +112,64 @@ class UserServiceImplTest {
                 verify(userRepository, times(1)).findFirstById(1L);
                 verify(userRepository, times(1)).save(any(UserInfo.class));
 
-
         }
 
+        @Test
+        void saveUser_MissingUsername_TestCase() {
+                // given
+                UserRequest userRequest = new UserRequest();
+                userRequest.setPassword("password123");
+
+                // when & then
+                Exception exception = assertThrows(RuntimeException.class, () -> {
+                        userService.saveUser(userRequest);
+                });
+
+                String expectedMessage = "Parameter username is not found in request..!!";
+                String actualMessage = exception.getMessage();
+                assertTrue(actualMessage.contains(expectedMessage));
+        }
+
+        @Test
+        void saveUser_MissingPassword_TestCase() {
+                // given
+                UserRequest userRequest = new UserRequest();
+                userRequest.setUsername("testUser");
+
+                // when & then
+                Exception exception = assertThrows(RuntimeException.class, () -> {
+                        userService.saveUser(userRequest);
+                });
+
+                String expectedMessage = "Parameter password is not found in request..!!";
+                String actualMessage = exception.getMessage();
+                assertTrue(actualMessage.contains(expectedMessage));
+        }
+
+        @Test
+        void getAllUsers_TestCase() {
+                UserInfo user1 = new UserInfo(1L, "user1", "password1", null);
+                UserInfo user2 = new UserInfo(2L, "user2", "password2", null);
+
+                UserRole role = new UserRole(5L, "ROLE_USER");
+                Set<UserRole> roles = new HashSet<>();
+                roles.add(role);
+
+                UserInfo user3 = new UserInfo(3L, "user3", "password3", roles);
+                List<UserInfo> users = Arrays.asList(user1, user2, user3);
+
+                when(userRepository.findAll()).thenReturn(users);
+
+                // when
+                List<UserResponse> userResponses = userService.getAllUser();
+
+                // then
+                assertNotNull(userResponses);
+                assertEquals(3, userResponses.size());
+                assertEquals("user1", userResponses.get(0).getUsername());
+                assertEquals("user2", userResponses.get(1).getUsername());
+                assertEquals("user3", userResponses.get(2).getUsername());
+                assertEquals(roles.size(), userResponses.get(2).getRoles().size());
+        }
 
 }
