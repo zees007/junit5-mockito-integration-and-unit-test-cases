@@ -220,8 +220,9 @@ class UserServiceImplTest {
                 verify(userDetails, times(1)).getUsername();
         }
 
+
         @Test
-        void testGetUserById_TestCase() {
+        void testGetUserById_WhenUserExists_TestCase() {
                 // Given
                 UserRole role1 = new UserRole(1L, "ROLE_USER");
                 Set<UserRole> roles = new HashSet<>();
@@ -248,6 +249,34 @@ class UserServiceImplTest {
         }
 
         @Test
+        void testGetUserById_WhenUserDoesNotExist_TestCase() {
+                // Given
+                Long userId = 1L;
+
+                when(userRepository.findFirstById(userId)).thenReturn(null);
+
+                // When & Then
+                RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+                        userService.getUserById(userId);
+                });
+
+                assertEquals("User not found with id: " + userId, exception.getMessage());
+                verify(userRepository, times(1)).findFirstById(userId);
+
+        }
+
+        @Test
+        void testGetUserById_WhenIdIsNull_TestCase() {
+                // When & Then
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        userService.getUserById(null);
+                });
+
+                assertEquals("Id cannot be null", exception.getMessage());
+                verify(userRepository, times(0)).findFirstById(anyLong());
+        }
+
+        @Test
         void testDeleteUserById_WhenUserExists_TestCase() {
                 // Given
                 Long userId = 1L;
@@ -269,7 +298,7 @@ class UserServiceImplTest {
         }
 
         @Test
-        void testDeleteUserById_WhenUserDoesNotExist() {
+        void testDeleteUserById_WhenUserDoesNotExist_TestCase() {
                 // Given
                 Long userId = 1L;
 
@@ -286,7 +315,7 @@ class UserServiceImplTest {
         }
 
         @Test
-        void testDeleteUserById_WhenIdIsNull() {
+        void testDeleteUserById_WhenIdIsNull_TestCase() {
                 // When & Then
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
                         userService.deleteUserById(null);

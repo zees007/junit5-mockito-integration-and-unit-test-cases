@@ -76,12 +76,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(Long id) {
-        UserResponse userResponse = null;
-        if(id != null){
-            UserInfo user = userRepository.findFirstById(id);
-            userResponse = modelMapper.map(user, UserResponse.class);
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
         }
-        return userResponse;
+        UserInfo user = userRepository.findFirstById(id);
+        if (user == null) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+
+        return modelMapper.map(user, UserResponse.class);
     }
 
     @Override
