@@ -12,6 +12,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -32,6 +36,14 @@ class UserServiceImplTest {
         @Mock
         private UserRepository userRepository;
 
+        @Mock
+        private SecurityContext securityContext;
+
+        @Mock
+        private Authentication authentication;
+
+        @Mock
+        private UserDetails userDetails;
 
         @InjectMocks
         private UserServiceImpl userService;
@@ -44,6 +56,7 @@ class UserServiceImplTest {
                 userService = new UserServiceImpl();
                 userService.userRepository = userRepository;
                 userService.modelMapper = modelMapper;
+                SecurityContextHolder.setContext(securityContext);
         }
 
         @Test
@@ -170,6 +183,41 @@ class UserServiceImplTest {
                 assertEquals("user2", userResponses.get(1).getUsername());
                 assertEquals("user3", userResponses.get(2).getUsername());
                 assertEquals(roles.size(), userResponses.get(2).getRoles().size());
+        }
+
+        @Test
+        void testGetLoggedInUserProfile_TestCase() {
+                // Given
+                String username = "testUser";
+                when(securityContext.getAuthentication()).thenReturn(authentication);
+                when(authentication.getPrincipal()).thenReturn(userDetails);
+                when(userDetails.getUsername()).thenReturn(username);
+
+                UserRole role1 = new UserRole(1L, "ROLE_USER");
+                Set<UserRole> roles = new HashSet<>();
+                roles.add(role1);
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(1L);
+                userInfo.setUsername(username);
+                userInfo.setPassword("password");
+                userInfo.setRoles(roles);
+
+                when(userRepository.findByUsername(username)).thenReturn(userInfo);
+
+                // When
+                UserResponse userResponse = userService.getLoggedInUserProfile();
+
+                // Then
+                assertNotNull(userResponse);
+                assertEquals(1L, userResponse.getId());
+                assertEquals(username, userResponse.getUsername());
+                assertEquals(roles, userResponse.getRoles());
+
+                verify(userRepository, times(1)).findByUsername(username);
+                verify(securityContext, times(1)).getAuthentication();
+                verify(authentication, times(1)).getPrincipal();
+                verify(userDetails, times(1)).getUsername();
         }
 
         @Test

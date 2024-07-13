@@ -16,5 +16,7 @@ public interface UserService {
 
     List<UserResponse> getAllUser();
 
+    Long deleteUserById(Long id);
+
 
 }

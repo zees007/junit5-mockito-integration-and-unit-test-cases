@@ -91,5 +91,10 @@ public class UserServiceImpl implements UserService {
         return userResponses;
     }
 
+    @Override
+    public Long deleteUserById(Long id) {
+        return null;
+    }
+
 
 }
