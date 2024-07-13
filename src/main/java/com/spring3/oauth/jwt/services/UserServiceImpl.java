@@ -34,13 +34,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Parameter password is not found in request..!!");
         }
 
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
-//        String usernameFromAccessToken = userDetail.getUsername();
-//
-//        UserInfo currentUser = userRepository.findByUsername(usernameFromAccessToken);
-
         UserInfo savedUser = null;
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -63,7 +56,6 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Can't find record with identifier: " + userRequest.getId());
             }
         } else {
-//            user.setCreatedBy(currentUser);
             savedUser = userRepository.save(user);
         }
         userRepository.refresh(savedUser);
