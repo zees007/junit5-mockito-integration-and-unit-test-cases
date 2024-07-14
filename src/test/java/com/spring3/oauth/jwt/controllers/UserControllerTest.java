@@ -1,6 +1,7 @@
 package com.spring3.oauth.jwt.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring3.oauth.jwt.dtos.AuthRequestDTO;
 import com.spring3.oauth.jwt.dtos.UserRequest;
 import com.spring3.oauth.jwt.dtos.UserResponse;
 import com.spring3.oauth.jwt.models.UserRole;
@@ -236,6 +237,9 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+
+
 
 //    @Test
 //    void getUserById_UserNotFound_Test() throws Exception {
