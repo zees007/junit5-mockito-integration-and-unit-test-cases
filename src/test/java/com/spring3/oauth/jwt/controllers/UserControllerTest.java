@@ -24,8 +24,7 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -232,7 +231,7 @@ class UserControllerTest {
         when(userService.deleteUserById(userId)).thenReturn(userId);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/delete/{id}", userId)
+        mockMvc.perform(delete("/api/v1/delete/{id}", userId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
