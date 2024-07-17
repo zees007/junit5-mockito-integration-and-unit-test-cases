@@ -2,7 +2,9 @@ package com.spring3.oauth.jwt.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring3.oauth.jwt.dtos.AuthRequestDTO;
+import com.spring3.oauth.jwt.dtos.RefreshTokenRequestDTO;
 import com.spring3.oauth.jwt.models.RefreshToken;
+import com.spring3.oauth.jwt.models.UserInfo;
 import com.spring3.oauth.jwt.services.JwtService;
 import com.spring3.oauth.jwt.services.RefreshTokenService;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Optional;
 
 
 import static org.mockito.ArgumentMatchers.any;
@@ -81,36 +85,39 @@ class AuthenticationTest {
 
     }
 
-//    @Test
-//    void refreshToken_Success_Test() throws Exception {
-//        // Given
-//        String refreshToken = "mockRefreshToken";
-//        RefreshTokenRequestDTO refreshTokenRequestDTO = new RefreshTokenRequestDTO(refreshToken);
-//
-//        // Mock RefreshTokenService to return a mock RefreshToken
-//        RefreshToken mockRefreshToken = new RefreshToken();
-//        mockRefreshToken.setToken(refreshToken);
-//        UserInfo mockUser = new UserInfo();
-//        mockUser.setUsername("testUser");
-//        when(mockRefreshToken.getUserInfo()).thenReturn(mockUser);
-//
-//        when(refreshTokenService.findByToken(refreshToken)).thenReturn(Optional.of(mockRefreshToken));
-//        when(refreshTokenService.verifyExpiration(mockRefreshToken)).thenReturn(mockRefreshToken);
-//
-//
-//
-//        // Mock JwtService behavior to return a mock access token
-//        String mockAccessToken = "mockAccessToken";
-//        when(jwtService.GenerateToken(mockUser.getUsername())).thenReturn(mockAccessToken);
-//
-//        // When & Then
-//        mockMvc.perform(post("/api/v1/refreshToken")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(refreshTokenRequestDTO)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.accessToken").value(mockAccessToken))
-//                .andExpect(jsonPath("$.token").value(refreshToken));
-//    }
+    @Test
+    void refreshToken_Success_Test() throws Exception {
+        // Given
+        String token = "mockTokenUUID";
+        RefreshTokenRequestDTO refreshTokenRequestDTO = new RefreshTokenRequestDTO(token);
+
+        // Create and set up the mock RefreshToken
+        RefreshToken mockRefreshToken = new RefreshToken();
+        mockRefreshToken.setToken(token);
+        mockRefreshToken.setExpiryDate(Instant.now().plusMillis(600000)); // Set expiry date in the future
+        UserInfo mockUser = new UserInfo();
+        mockUser.setUsername("testUser");
+        mockRefreshToken.setUserInfo(mockUser);
+
+        // Mock RefreshTokenService to return a mock RefreshToken
+        when(refreshTokenService.findByToken(token)).thenReturn(Optional.of(mockRefreshToken));
+        when(refreshTokenService.verifyExpiration(mockRefreshToken)).thenReturn(mockRefreshToken);
+
+        // Mock JwtService behavior to return a mock access token
+        String mockAccessToken = "mockAccessToken";
+        when(jwtService.GenerateToken(mockUser.getUsername())).thenReturn(mockAccessToken);
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/refreshToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(refreshTokenRequestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value(mockAccessToken))
+                .andExpect(jsonPath("$.token").value(token));
+
+    }
+
+
 
 
 

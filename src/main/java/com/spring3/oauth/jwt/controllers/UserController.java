@@ -103,7 +103,6 @@ public class UserController {
            return JwtResponseDTO.builder()
                    .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()))
                    .token(refreshToken.getToken()).build();
-
         } else {
             throw new UsernameNotFoundException("invalid user request..!!");
         }
